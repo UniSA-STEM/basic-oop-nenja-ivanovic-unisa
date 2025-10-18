@@ -12,7 +12,7 @@ from Asset import Asset
 class Rig:
     storable_assets = ["Data Spike", "Removable Drive", "Security Chip"]
 
-    def __init___(self, name: str):
+    def __init__(self, name: str):
         self.__name = name
         # attributes measuring damage:
         self.__damage_counter = 0
@@ -26,7 +26,7 @@ class Rig:
         self.__max_storage = 5
 
     def __str__(self) -> str:
-        return self.__name + "-" + self.describe_condition() + "\n" + self.describe_stored_assets()
+        return "\n------------------------------------------------\n" + self.__name + " - " + self.describe_condition() + "\n" + self.describe_stored_assets() + "\n------------------------------------------------\n"
 
     # getters
     def get_name(self):
@@ -55,9 +55,9 @@ class Rig:
         Compares the maximum rig storage capacity and current fullness to determine if there is remaining storage room.
         :return: True if room remaining, False if storage is full.
         """
-        return self.__max_storage - self.__storage_counter == 0
+        return self.__max_storage - self.__storage_counter > 0
 
-    def store_item(self, asset: Asset) -> Asset | None:
+    def store_asset(self, asset: Asset) -> Asset | None:
         """
         Try to store an asset into storage, ensuring first that there is space and that asset type is allowed.
         :param Asset asset: The asset item that wants to be stored.
@@ -71,7 +71,7 @@ class Rig:
                     f"'{asset.name} stored in {self.__name}. Assets stored: {self.__storage_counter}/{self.__max_storage}")
                 return None
             else:
-                print(f"{self.__name} is unable to store that type of item.")
+                print(f"{self.__name} is unable to store that type of asset.")
         else:
             print("Cannot store asset; storage is full.")
         return asset
@@ -91,5 +91,6 @@ class Rig:
         description = f"Assets stored ({self.__storage_counter}/{self.__max_storage}):"
         index = 1
         for asset in self.__storage:
-            description + f"\n{index}. " + asset.__str__()
+            description = description + f"\n{index}. " + asset.__str__()
+            index += 1
         return description

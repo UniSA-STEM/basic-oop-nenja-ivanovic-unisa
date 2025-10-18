@@ -11,23 +11,26 @@ This is my own work as defined by the University's Academic Misconduct Policy.
 class Asset:
     available_assets = ["CryptoToken", "Data Spike", "Removable Drive", "Security Chip", "Hardware Patch"]
 
-    def __init__(self, name: str):
+    def __new__(cls, name):
         if name not in Asset.available_assets:
-            print(f"The item '{name}' does not exist. Available assets are: {Asset.available_assets}")
-        else:
-            self.__name = name
-            self.__encrypted = False
+            print(f"The asset '{name}' does not exist. Available assets are: {Asset.available_assets}")
+            return None
+        return super().__new__(cls)
 
-            if name == "CryptoToken:":
-                self.__description = "Used to acquire or repair rigs."
-            elif name == "Data Spike":
-                self.__description = "Used in battles."
-            elif name == "Removable Drive":
-                self.__description = "Found in rigs and used for extraction."
-            elif name == "Security Chip":
-                self.__description = "Used to encrypt or decrypt assets."
-            else:
-                self.__description = "Used to upgrade rigs."
+    def __init__(self, name: str):
+        self.__name = name
+        self.__encrypted = False
+
+        if name == "CryptoToken:":
+            self.__description = "Used to acquire or repair rigs."
+        elif name == "Data Spike":
+            self.__description = "Used in battles."
+        elif name == "Removable Drive":
+            self.__description = "Found in rigs and used for extraction."
+        elif name == "Security Chip":
+            self.__description = "Used to encrypt or decrypt assets."
+        else:
+            self.__description = "Used to upgrade rigs."
 
     def __str__(self):
         name = f"{self.name}: {self.description}"
