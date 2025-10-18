@@ -10,4 +10,5 @@ from Asset import Asset
 # from Hacker import Hacker
 from Rig import Rig
 
-# Test:
+# Test: attempting to add various items to rig storage.
+rig1 = Rig("Rig1")

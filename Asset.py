@@ -29,6 +29,11 @@ class Asset:
             else:
                 self.__description = "Used to upgrade rigs."
 
+    def __str__(self):
+        name = f"{self.name}: {self.description}"
+        if self.__encrypted: name += " [Encrypted]"
+        return name
+
     # getters;
     def get_name(self):
         return self.__name

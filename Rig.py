@@ -25,6 +25,9 @@ class Rig:
         self.__max_hp = 2
         self.__max_storage = 5
 
+    def __str__(self) -> str:
+        return self.__name + "-" + self.describe_condition() + "\n" + self.describe_stored_assets()
+
     # getters
     def get_name(self):
         return self.__name
@@ -72,3 +75,21 @@ class Rig:
         else:
             print("Cannot store asset; storage is full.")
         return asset
+
+    def describe_condition(self) -> str:
+        """ Returns a description of the Rig based on its health and upgrade level."""
+        condition = ""
+        if self.__broken_state:
+            condition += "Broken"
+        else:
+            condition += "Pristine"
+        condition += f" (Level {self.__upgrade_level})"
+        return condition
+
+    def describe_stored_assets(self) -> str:
+        """ Returns a string of the Asset objects stored in the Rig's storage, listed in a visually appealing way."""
+        description = f"Assets stored ({self.__storage_counter}/{self.__max_storage}):"
+        index = 1
+        for asset in self.__storage:
+            description + f"\n{index}. " + asset.__str__()
+        return description
