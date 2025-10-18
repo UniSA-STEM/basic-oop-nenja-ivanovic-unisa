@@ -9,7 +9,7 @@ This is my own work as defined by the University's Academic Misconduct Policy.
 
 
 class Asset:
-    available_assets = ["CryptoToken", "Dataspike", "Removable_Drive", "SecurityChip", "HardwarePatch"]
+    available_assets = ["CryptoToken", "Data Spike", "Removable Drive", "Security Chip", "Hardware Patch"]
 
     def __init__(self, name: str):
         assert name in Asset.available_assets, f"The item '{name}' does not exist. Available assets are: {Asset.available_assets}"
@@ -18,11 +18,11 @@ class Asset:
 
         if name == "CryptoToken:":
             self.__description = "Used to acquire or repair rigs."
-        elif name == "Dataspike":
+        elif name == "Data Spike":
             self.__description = "Used in battles."
-        elif name == "Removable_Drive":
+        elif name == "Removable Drive":
             self.__description = "Found in rigs and used for extraction."
-        elif name == "SecurityChip":
+        elif name == "Security Chip":
             self.__description = "Used to encrypt or decrypt assets."
         else:
             self.__description = "Used to upgrade rigs."
