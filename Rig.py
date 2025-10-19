@@ -10,8 +10,6 @@ from Asset import Asset
 
 
 class Rig:
-    storable_assets = ["Data Spike", "Removable Drive", "Security Chip"]
-
     def __init__(self, name: str):
         self.__name = name
         self.__password = None  # hacker will pick a password when they register the device
@@ -150,14 +148,41 @@ class Rig:
         if not self.__access_authorized(password): return asset
 
         if self.__storage_capacity_available():
-            if isinstance(asset, Asset) and asset.name in Rig.storable_assets:
+            if isinstance(asset, Asset):
                 self.__storage.append(asset)
                 self.__storage_counter += 1
                 print(
                     f"'{asset.name} stored in {self.__name}. Assets stored: {self.__storage_counter}/{self.__max_storage}")
                 return None
             else:
-                print(f"{self.__name} is unable to store that type of asset.")
+                print(f"Cannot store asset; asset not recognized.")
         else:
             print("Cannot store asset; storage is full.")
         return asset
+
+    def register_password(self, new_password: str, existing_password: str = None) -> None:
+        """
+        Set up a new password for rig access, or replace an existing one if authorized.
+
+        :param new_password: A string denoting the new password to be registered.
+        :param existing_password: The password required to verify that the user is authorized to replace the existing password.
+        :return: None
+        """
+        if not self.__access_authorized(existing_password):
+            print("You must provide the existing password before you can register a new one.")
+
+        else:
+            self.__password = new_password
+            print(f"New password successfully registered on {self.__name}.")
+        return None
+
+    def upgrade(self, hardware_patch: Asset) -> None:
+        """Upgrade the rig by consuming a hardware patch asset."""
+        if isinstance(hardware_patch, Asset) and hardware_patch.name == "Hardware Patch":
+            self.__upgrade_level += 1
+            self.__max_hp += 2
+            self.__damage_counter = 0  # reset to zero
+            print(f"Upgrade complete! {self.__name} is now {self.__describe_condition()}.")
+        else:
+            print(f"Upgrade failed. A hardware patch is required to upgrade {self.__name}.")
+        return None
