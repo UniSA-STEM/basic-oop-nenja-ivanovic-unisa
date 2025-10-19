@@ -26,7 +26,7 @@ class Rig:
         self.__max_storage = 5
 
     def __str__(self) -> str:
-        return ("\n------------------------------------------------\n" +
+        return ("------------------------------------------------\n" +
                 self.__name + " - " + self.__describe_condition() + "\n" + self.__describe_stored_assets() +
                 "\n------------------------------------------------\n")
 
@@ -78,16 +78,19 @@ class Rig:
 
     def __describe_stored_assets(self) -> str:
         """ Returns a string of the Asset objects stored in the Rig's storage, listed in a visually appealing way."""
-        description = f"Assets stored ({self.__storage_counter}/{self.__max_storage}):"
-        index = 1
-        for asset in self.__storage:
-            description = description + f"\n{index}. " + asset.__str__()
-            index += 1
+        description = f"\nAssets stored ({self.__storage_counter}/{self.__max_storage}):"
+        if len(self.__storage) == 0:
+            description += " None"
+        else:
+            index = 1
+            for asset in self.__storage:
+                description = description + f"\n{index}. " + asset.__str__()
+                index += 1
         return description
 
     def __get_unencrypted_assets(self) -> list[Asset]:
         """Returns a list of all the assets in the rig's storage which are not encrypted."""
-        return [asset for asset in self.__storage if not asset.get_encrypted]
+        return [asset for asset in self.__storage if asset.get_encrypted != True]
 
     def __search_unencrypted_assets_by_name(self, name: str) -> list[Asset]:
         """Searches the Rig storage for unencrypted assets by name, and returns a list of matches."""
@@ -101,56 +104,58 @@ class Rig:
         """Matches a provided password against the registered to authorize user access."""
         if self.__broken_state:  # if the rig is broken, enemy hacker can bypass password requirements.
             authorized = True
-            print(f"WARNING: Unauthorized access has occurred on {self.__name}.")
+            print(f"...{self.name} allows access to unauthorized user: WARNING!")
         else:
             authorized = (password == self.__password)
-            if not authorized: print("Access denied.")
+            if not authorized: print(f"...{self.name} denies access to unauthorized user.")
         return authorized
 
     def retrieve_asset(self, name: str, password: str = None) -> Asset | None:
         """
-        Allows objects from other classes to take resources from the rig's storage if they pass the rig's security measures.
+        Allows objects from other classes to take resources from the rig's storage if they pass the rig's security
+        measures.
         :param name:The name of the asset which the user wishes to retrieve from the rig's storage.
         :param password: The password created by the owner of the rig when the rig was registered.
-        :return: Asset if an asset with a matching name is found in the rig's storage which is unencrypted, otherwise nothing.
+        :return: Asset if an asset with a matching name is found in the rig's storage which is unencrypted,
+        otherwise nothing.
         """
         if not self.__access_authorized(password): return None
-
         assets = self.__search_unencrypted_assets_by_name(name)
         if len(assets) == 0:
-            print(f"Unable to retrieve {name} from {self.__name}; the asset is encrypted or does not exist.")
+            print(f"...{self.__name} fails to retrieve {name} from storage; the asset is encrypted or does not exist.")
             return None
         else:
             asset = assets[0]
             self.__storage_counter -= 1
             self.__storage.remove(asset)
-            print(f"An unencrypted {name} has been retrieved from {self.__name}'s storage.")
+            print(f"...{self.__name} retrieves {name} from storage.")
             return asset
 
     def retrieve_all_assets(self, password: str = None) -> list[Asset] | None:
         """
-        Authorizes access of the object calling the function and then iterates through the list of unencrypted assets, calling
-        the retrieve_asset() function on each.
+        Authorizes access of the object calling the function and then iterates through the list of unencrypted assets,
+        calling the retrieve_asset() function on each.
         :param password: The password created by the owner of the rig when the rig was registered.
         :return: A list of assets if the retrieval is successful, None if not.
         """
         if not self.__access_authorized(password): return None
         assets = self.__get_unencrypted_assets()
         if len(assets) == 0:
-            print(f"There are no assets in {self.__name} available for retrieval.")
+            print(f"...{self.__name} has no stored assets available for retrieval.")
             return None
         else:
-            print("Please wait, retrieving assets...")
+            print(f"...{self.__name} begins retrieving stored assets...")
             count = 0
             for asset in assets:
                 self.retrieve_asset(asset.name, password)
                 count += 1
-            print(f"Retrieval complete ({count} asset(s) have been retrieved from {self.__name}).")
+            print(f"...{self.__name} finishes retrieval of {count} asset(s)).")
             return assets
 
     def store_asset(self, asset: Asset, password: str = None) -> Asset | None:
         """
-        Try to store an asset into storage, ensuring first that access is authorized, there is storage space and that the asset type is allowed.
+        Try to store an asset into storage, ensuring first that access is authorized, there is storage space and
+        that the asset type is allowed.
         :param asset: The asset item that wants to be stored.
         :param password: The password created by the owner of the rig when the rig was registered.
         :return: Returns the Asset object if it was not able to be stored, or None if it was.
@@ -161,8 +166,8 @@ class Rig:
             if isinstance(asset, Asset):
                 self.__storage.append(asset)
                 self.__storage_counter += 1
-                print(
-                    f"{asset.name} stored in {self.__name}. Assets stored: {self.__storage_counter}/{self.__max_storage}")
+                print(f"{asset.name} stored in {self.__name}. "
+                      f"Assets stored: {self.__storage_counter}/{self.__max_storage}")
                 return None
             else:
                 print(f"Cannot store asset; asset not recognized.")
@@ -175,15 +180,18 @@ class Rig:
         Set up a new password for rig access, or replace an existing one if authorized.
 
         :param new_password: A string denoting the new password to be registered.
-        :param existing_password: The password required to verify that the user is authorized to replace the existing password.
+        :param existing_password: The password required to verify that the user is authorized to replace
+        the existing password.
         :return: None
         """
         if not self.__access_authorized(existing_password):
-            print("You must provide the existing password before you can register a new one.")
+            print(f"{self.__name} rejects new password; "
+                  f"the existing password must be provided before a new one can be registered.")
 
         else:
             self.__password = new_password
-            print(f"New password successfully registered on {self.__name}.")
+            self.__registered = True
+            print(f"{self.__name} successfully registers new password.")
         return None
 
     def upgrade(self, hardware_patch: Asset) -> None | Asset:
@@ -192,21 +200,23 @@ class Rig:
             self.__upgrade_level += 1
             self.__max_hp += 2
             self.__damage_counter = 0  # reset to zero
-            print(f"Upgrade complete! {self.__name} is now {self.__describe_condition()}.")
+            print(f"{self.__name} is upgraded to {self.__describe_condition()}.")
             return None
         else:
-            print(f"Upgrade failed. A hardware patch is required to upgrade {self.__name}.")
+            print(f"{self.__name} fails to upgrade; a hardware patch was not provided.")
             return hardware_patch
 
     def repair(self, crypto_token: Asset) -> Asset | None:
         """Repair the rig by consuming a CryptoToken. Return the provided asset if it is not the correct type."""
         if not (self.__damage_counter < self.__max_hp):
-            print(f"{self.__name} does not need a repair as it is on full health.")
+            print(f"{self.__name} does not need a repair as it has no damage.")
         elif not (isinstance(crypto_token, Asset) and crypto_token.name == "CryptoToken"):
-            print(f"Repair failed. A CryptoToken is required to repair {self.__name}.")
+            print(f"{self.__name} fails to repair; a CryptoToken was not provided.")
         else:
             self.__damage_counter = 0
             self.__broken_state = False
             print(f"Repair complete! {self.__name} is now {self.__describe_condition()}.")
             return None
         return crypto_token
+
+    # def launch_data_spike

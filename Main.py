@@ -7,12 +7,11 @@ Username: <username>
 This is my own work as defined by the University's Academic Misconduct Policy.
 """
 from Asset import Asset
-# from Hacker import Hacker
+from Hacker import Hacker
 from Rig import Rig
 
 
-#
-def test1():
+def trial1():
     """Test: attempting to add various items to rig storage."""
     rig1 = Rig("Rig1")
     print(rig1)
@@ -23,4 +22,41 @@ def test1():
     print(rig1)
 
 
-test1()
+def trial2():
+    """Test: initiate hacker and acquire a rig."""
+    charlie = Hacker("Charlie")
+    alex = Hacker("Alex")
+    rig1 = Rig("Rig1")
+    rig2 = Rig("Rig2")
+
+    print(charlie)
+    charlie.acquire_rig(rig1, "charli3L0VESbananas3332!!")
+    print(charlie)  # should not have anything in her inventory.
+    charlie.acquire_rig(rig2, "W4MBOtxl")  # already has rig
+
+    alex.acquire_rig(Asset("Hardware Patch"), "14slytherinLemonzzz@")  # rig not provided
+    alex.acquire_rig(rig1, "14slytherinLemonzzz@")  # rig already owned
+    alex.retrieve_asset("CryptoToken")  # lose token
+    alex.acquire_rig(rig2, "14slytherinLemonzzz@")  # does not have token
+
+
+def trial3():
+    """ Test: transfer assets between hacker inventories and rig storage."""
+    charlie = Hacker("Charlie")
+    alex = Hacker("Alex")
+    rig1 = Rig("Rig1")
+    rig2 = Rig("Rig2")
+    charlie.acquire_rig(rig1, "charli3L0VESbananas3332!!")
+    alex.acquire_rig(rig2, "14slytherinLemonzzz@")
+
+    charlie.get_asset_from_rig("Data Spike")  # valid
+    print(charlie)
+    print(rig1)
+
+    charlie.get_asset_from_rig("Data")  # not real data
+    charlie.get_asset_from_rig("CryptoToken")  # rig does not currently possess this object.
+    charlie.get_asset_from_rig("Data Spike", rig2)
+    print(charlie)
+
+
+trial3()
