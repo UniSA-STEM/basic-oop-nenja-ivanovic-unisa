@@ -12,6 +12,7 @@ from Asset import Asset
 class Rig:
     def __init__(self, name: str):
         self.__name = name
+        self.__registered = False  # whether the rig belongs to someone
         self.__password = None  # hacker will pick a password when they register the device
         # attributes measuring damage:
         self.__damage_counter = 0
@@ -33,7 +34,12 @@ class Rig:
     def get_name(self):
         return self.__name
 
+    def get_registered(self):
+        return self.__registered
+
+    # properties
     name = property(get_name)
+    registered = property(get_registered)
 
     def get_damage_counter(self):
         return self.__damage_counter
