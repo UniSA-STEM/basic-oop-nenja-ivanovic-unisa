@@ -25,11 +25,15 @@ class Rig:
         self.__max_storage = 5
 
     def __str__(self) -> str:
-        return "\n------------------------------------------------\n" + self.__name + " - " + self.__describe_condition() + "\n" + self.__describe_stored_assets() + "\n------------------------------------------------\n"
+        return ("\n------------------------------------------------\n" +
+                self.__name + " - " + self.__describe_condition() + "\n" + self.__describe_stored_assets() +
+                "\n------------------------------------------------\n")
 
     # getters
     def get_name(self):
         return self.__name
+
+    name = property(get_name)
 
     def get_damage_counter(self):
         return self.__damage_counter
@@ -57,7 +61,7 @@ class Rig:
         return self.__max_storage - self.__storage_counter > 0
 
     def __describe_condition(self) -> str:
-        """ Returns a description of the Rig based on its health and upgrade level."""
+        """ Returns a description of the Rig's condition based on its health and upgrade level."""
         condition = ""
         if self.__broken_state:
             condition += "Broken"
@@ -93,7 +97,7 @@ class Rig:
             authorized = True
             print(f"WARNING: Unauthorized access has occurred on {self.__name}.")
         else:
-            authorized = (password != self.__password)
+            authorized = (password == self.__password)
             if not authorized: print("Access denied.")
         return authorized
 
@@ -152,7 +156,7 @@ class Rig:
                 self.__storage.append(asset)
                 self.__storage_counter += 1
                 print(
-                    f"'{asset.name} stored in {self.__name}. Assets stored: {self.__storage_counter}/{self.__max_storage}")
+                    f"{asset.name} stored in {self.__name}. Assets stored: {self.__storage_counter}/{self.__max_storage}")
                 return None
             else:
                 print(f"Cannot store asset; asset not recognized.")
@@ -176,13 +180,27 @@ class Rig:
             print(f"New password successfully registered on {self.__name}.")
         return None
 
-    def upgrade(self, hardware_patch: Asset) -> None:
-        """Upgrade the rig by consuming a hardware patch asset."""
+    def upgrade(self, hardware_patch: Asset) -> None | Asset:
+        """Upgrade the rig by consuming a hardware patch asset. Return the provided asset if it is not the correct type."""
         if isinstance(hardware_patch, Asset) and hardware_patch.name == "Hardware Patch":
             self.__upgrade_level += 1
             self.__max_hp += 2
             self.__damage_counter = 0  # reset to zero
             print(f"Upgrade complete! {self.__name} is now {self.__describe_condition()}.")
+            return None
         else:
             print(f"Upgrade failed. A hardware patch is required to upgrade {self.__name}.")
-        return None
+            return hardware_patch
+
+    def repair(self, crypto_token: Asset) -> Asset | None:
+        """Repair the rig by consuming a CryptoToken. Return the provided asset if it is not the correct type."""
+        if not (self.__damage_counter < self.__max_hp):
+            print(f"{self.__name} does not need a repair as it is on full health.")
+        elif not (isinstance(crypto_token, Asset) and crypto_token.name == "CryptoToken"):
+            print(f"Repair failed. A CryptoToken is required to repair {self.__name}.")
+        else:
+            self.__damage_counter = 0
+            self.__broken_state = False
+            print(f"Repair complete! {self.__name} is now {self.__describe_condition()}.")
+            return None
+        return crypto_token

@@ -10,12 +10,17 @@ from Asset import Asset
 # from Hacker import Hacker
 from Rig import Rig
 
-# Test: attempting to add various items to rig storage.
-rig1 = Rig("Rig1")
-print(rig1)
-rig1.store_asset(Asset("dat"))  # invalid
-rig1.store_asset(Asset("CryptoToken"))  # invalid
-rig1.store_asset(Asset("Data Spike"))  # valid
-rig1.store_asset(Asset("Data Spike"))  # valid
-rig1.store_asset(Asset("Data Spike"))  # storage full
-print(rig1)
+
+#
+def test1():
+    """Test: attempting to add various items to rig storage."""
+    rig1 = Rig("Rig1")
+    print(rig1)
+    rig1.store_asset(Asset("dat"))  # invalid
+    rig1.store_asset(Asset("CryptoToken"))  # invalid
+    rig1.store_asset(Asset("Data Spike"))  # valid
+    rig1.store_asset(Asset("Data Spike"))  # storage full
+    print(rig1)
+
+
+test1()
