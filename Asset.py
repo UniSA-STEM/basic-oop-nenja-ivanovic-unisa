@@ -6,18 +6,24 @@ ID: <student_id>
 Username: <username>
 This is my own work as defined by the University's Academic Misconduct Policy.
 """
+from random import randint
 
 
 class Asset:
     available_assets = ["CryptoToken", "Data Spike", "Removable Drive", "Security Chip", "Hardware Patch"]
 
-    def __new__(cls, name):
-        if name not in Asset.available_assets:
+    def __new__(cls, name: str = None):
+        if name not in Asset.available_assets and name is not None:
             print(f"The asset '{name}' does not exist. Available assets are: {Asset.available_assets}")
             return None
         return super().__new__(cls)
 
-    def __init__(self, name: str):
+    def __init__(self, name: str = None):
+
+        if name is None:  # generate a random asset when no name is specified
+            random_index = randint(0, len(Asset.available_assets) - 1)
+            name = Asset.available_assets[random_index]
+
         self.__name = name
         self.__encrypted = False
 

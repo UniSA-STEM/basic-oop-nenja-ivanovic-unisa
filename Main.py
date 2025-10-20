@@ -9,6 +9,7 @@ This is my own work as defined by the University's Academic Misconduct Policy.
 from Asset import Asset
 from Hacker import Hacker
 from Rig import Rig
+from random import randint
 
 
 def trial1():
@@ -41,7 +42,8 @@ def trial2():
 
 
 def trial3():
-    """ Test: transfer assets between hacker inventories and rig storage."""
+    """ Test: transfer assets between hacker inventories and rig storage. Manage Hacker trace level and rig
+    random asset generation."""
     charlie = Hacker("Charlie")
     alex = Hacker("Alex")
     rig1 = Rig("Rig1")
@@ -55,8 +57,18 @@ def trial3():
 
     charlie.get_asset_from_rig("Data")  # not real data
     charlie.get_asset_from_rig("CryptoToken")  # rig does not currently possess this object.
+    charlie.get_asset_from_rig("Data Spike", rig2)  # trying to steal from another hacker's rig.
     charlie.get_asset_from_rig("Data Spike", rig2)
+    charlie.get_asset_from_rig("Data Spike", rig2)  # too exposed
     print(charlie)
+
+    charlie.lay_low()
+    charlie.lay_low()
+    charlie.lay_low()
+    charlie.lay_low()
+    charlie.lay_low()
+    print(charlie)
+    print(rig1)
 
 
 trial3()

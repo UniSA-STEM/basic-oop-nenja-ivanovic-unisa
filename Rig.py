@@ -7,6 +7,7 @@ Username: <username>
 This is my own work as defined by the University's Academic Misconduct Policy.
 """
 from Asset import Asset
+from random import randint
 
 
 class Rig:
@@ -166,7 +167,7 @@ class Rig:
             if isinstance(asset, Asset):
                 self.__storage.append(asset)
                 self.__storage_counter += 1
-                print(f"{asset.name} stored in {self.__name}. "
+                print(f"{self.__name} stores a {asset.name}. "
                       f"Assets stored: {self.__storage_counter}/{self.__max_storage}")
                 return None
             else:
@@ -219,4 +220,12 @@ class Rig:
             return None
         return crypto_token
 
-    # def launch_data_spike
+    def generate_asset(self) -> None:
+        """If storage space is available, alls the Asset class constructor to produce a random asset from the
+         available list and stores it."""
+        if self.__storage_capacity_available():
+            new_asset = Asset()
+            print(f"{self.__name} generates a {new_asset.name}.")
+            self.store_asset(new_asset, self.__password)
+        else:
+            print(f"{self.__name} tries to generate an asset, but there is no storage space available.")

@@ -106,7 +106,13 @@ class Hacker:
         return None
 
     def get_asset_from_rig(self, name: str, alt_rig: Rig = None) -> None:
+        if self.__is_exposed:
+            print(f"{self.__name} wants to transfer assets, but can't because they are too exposed.")
+            return None
         self.__trace_level += 1
+        if self.__trace_level == self.__trace_threshold:
+            self.__is_exposed = True
+            print(f"{self.__name} is exposed!")
 
         if alt_rig is None:
             rig = self.__rig  # taking from own rig
@@ -120,3 +126,16 @@ class Hacker:
         self.__inventory = [asset for asset in self.__inventory if asset is not None]
         print("")
         return None
+
+    def lay_low(self) -> None:
+        """Reduces hacker trace level by one if it is greater than zero, sets is_exposed status to False and
+         asks the rig to generate an asset if it has storage space."""
+        if self.__trace_level - 1 >= 0:
+            self.__trace_level -= 1
+            self.__is_exposed = False
+        print(f"{self.__name} lays low to reduce their trace level to: {self.__describe_trace_level()}")
+
+        if isinstance(self.__rig, Rig):  # rig generates a random asset as a result
+            self.__rig.generate_asset()
+
+        print("")
