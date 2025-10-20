@@ -269,3 +269,51 @@ class Rig:
                 print(f"...{self.__name} launches the data spike on {target.name}!")
                 target.take_damage(data_spike)
         return None
+
+    def encrypt_stored_asset(self, name: str, password: str = None) -> None:
+        """
+        Searches storage for an unencrypted asset by name and encrypts it if there is also a Security Chip in storage.
+        :param name: The name of the asset to be encrypted.
+        :param password: The password created by the owner of the rig when the rig was registered.
+        :return: None
+        """
+        if not self.__access_authorized(password): return None
+
+        matching_assets = self.__search_unencrypted_assets_by_name(name)
+        if len(matching_assets) == 0:
+            print(f"...{self.__name} fails to encrypt the asset; the asset is already encrypted or does not exist.")
+        else:
+            security_chip = self.retrieve_asset("Security Chip", password)
+            if security_chip is None:
+                print(f"...{self.__name} fails to encrypt the {name}; it cannot find a Security Chip in storage.")
+            else:
+                for asset in self.__storage:
+                    if asset.name == name and not asset.encrypted:
+                        asset.encrypt()
+                        break
+                print(f"...{self.__name} encrypts the {name} using 1 Security Chip.")
+        return None
+
+    def decrypt_stored_asset(self, name: str, password: str = None) -> None:
+        """
+        Searches storage for an encrypted asset by name and decrypts it if there is also a Security Chip in storage.
+        :param name: The name of the asset to be decrypted.
+        :param password: The password created by the owner of the rig when the rig was registered.
+        :return: None
+        """
+        if not self.__access_authorized(password): return None
+
+        matching_assets = self.__search_unencrypted_assets_by_name(name)
+        if len(matching_assets) == self.__storage_counter:
+            print(f"...{self.__name} fails to decrypt the asset; the asset is already decrypted or does not exist.")
+        else:
+            security_chip = self.retrieve_asset("Security Chip", password)
+            if security_chip is None:
+                print(f"...{self.__name} fails to decrypt the {name}; it cannot find a Security Chip in storage.")
+            else:
+                for asset in self.__storage:
+                    if asset.name == name and asset.encrypted:
+                        asset.decrypt()
+                        break
+                print(f"...{self.__name} decrypts the {name} using 1 Security Chip.")
+        return None
