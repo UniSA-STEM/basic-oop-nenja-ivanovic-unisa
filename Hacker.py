@@ -102,19 +102,29 @@ class Hacker:
                 self.__rig = rig
                 self.__rig_password = password
                 self.__rig.register_password(password)
-        print("")
+
+        print("")  # formatting
         return None
+
+    def __increase_trace_level(self) -> None:
+        """Increases a Hacker's trace level when they perform a risky action, and updates their 'is_exposed' status
+        if the level reaches the trace threshold. A summary statement is outputted."""
+        self.__trace_level += 1
+        if self.__trace_level == self.__trace_threshold:
+            self.__is_exposed = True
+        print(f"...{self.__name}'s trace level increases as a result of this risky action: "
+              f"{self.__name} is {self.__describe_trace_level()}.\n")
 
     def get_asset_from_rig(self, name: str, alt_rig: Rig = None) -> None:
         if self.__is_exposed:
             print(f"{self.__name} wants to transfer assets, but can't because they are too exposed.")
             return None
-        self.__trace_level += 1
-        if self.__trace_level == self.__trace_threshold:
-            self.__is_exposed = True
-            print(f"{self.__name} is exposed!")
 
         if alt_rig is None:
+            if self.__rig is None:
+                print(f"{self.__name} wants to transfer assets from their rig, "
+                      f"but can't because ... they don't have a rig.")
+                return None
             rig = self.__rig  # taking from own rig
             print(f"{self.__name} tries to transfer a {name} from {rig.name}...")
         else:
@@ -124,7 +134,26 @@ class Hacker:
         self.__inventory.append(rig.retrieve_asset(name, self.__rig_password))
         # remove 'None' if that is what was returned:
         self.__inventory = [asset for asset in self.__inventory if asset is not None]
-        print("")
+        self.__increase_trace_level()
+
+        return None
+
+    def launch_data_spike(self, target_rig: Rig) -> None:
+        """
+        Uses the hacker's registered rig to attack another hacker's rig with a data spike.
+        :param target_rig: The Rig object that will receive the attack damage.
+        :return: None
+        """
+        if self.__is_exposed:
+            print(f"{self.__name} wants to launch a data spike, but can't because they are too exposed.")
+            return None
+        if self.__rig is None:
+            print(f"{self.__name} wants to launch a data spike from their rig, "
+                  f"but can't because ... they don't have a rig.")
+            return None
+        print(f"{self.__name} attempts to use {self.__rig.name} to launch a data spike...")
+        self.__rig.launch_data_spike(target_rig, self.__rig_password)
+        self.__increase_trace_level()
         return None
 
     def lay_low(self) -> None:

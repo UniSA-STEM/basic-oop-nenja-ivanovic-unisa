@@ -12,6 +12,7 @@ from Rig import Rig
 from random import randint
 
 
+# Test: attempting to add various items to rig storage.
 def trial1():
     """Test: attempting to add various items to rig storage."""
     rig1 = Rig("Rig1")
@@ -23,6 +24,7 @@ def trial1():
     print(rig1)
 
 
+# Test: initiate hacker and acquire a rig.
 def trial2():
     """Test: initiate hacker and acquire a rig."""
     charlie = Hacker("Charlie")
@@ -41,6 +43,8 @@ def trial2():
     alex.acquire_rig(rig2, "14slytherinLemonzzz@")  # does not have token
 
 
+# Test: transfer assets between hacker inventories and rig storage. Manage Hacker trace level and rig
+# random asset generation.
 def trial3():
     """ Test: transfer assets between hacker inventories and rig storage. Manage Hacker trace level and rig
     random asset generation."""
@@ -71,4 +75,27 @@ def trial3():
     print(rig1)
 
 
-trial3()
+# Test: Launch data spike attacks, take rig damage and repair damage.
+def trial4():
+    """Test: Launch data spike attacks, take rig damage and repair damage."""
+    charlie = Hacker("Charlie")
+    alex = Hacker("Alex")
+    rig1 = Rig("Rig1")
+    rig2 = Rig("Rig2")
+    charlie.acquire_rig(rig1, "charli3L0VESbananas3332!!")
+    alex.acquire_rig(rig2, "14slytherinLemonzzz@")
+
+    alex.launch_data_spike(rig1)
+    alex.launch_data_spike(rig1)
+    alex.launch_data_spike(rig1)  # no spike available
+    alex.get_asset_from_rig("Data Spike", rig1)
+    alex.lay_low()  # generate assets
+    alex.lay_low()
+    alex.lay_low()
+    alex.lay_low()
+    alex.launch_data_spike(rig1)  # if new data spikes have been generated, rig 1 is attacked when already broken.
+    alex.launch_data_spike(3)  # incorrect input
+    charlie.launch_data_spike(rig2)
+
+
+trial4()

@@ -103,12 +103,14 @@ class Rig:
 
     def __access_authorized(self, password: str = None) -> bool:
         """Matches a provided password against the registered to authorize user access."""
-        if self.__broken_state:  # if the rig is broken, enemy hacker can bypass password requirements.
-            authorized = True
-            print(f"...{self.name} allows access to unauthorized user: WARNING!")
-        else:
-            authorized = (password == self.__password)
-            if not authorized: print(f"...{self.name} denies access to unauthorized user.")
+
+        authorized = (password == self.__password)
+        if not authorized:
+            if self.__broken_state:  # if the rig is broken, enemy hacker can bypass password requirements.
+                authorized = True
+                print(f"...{self.name} allows access to unauthorized user: WARNING!")
+            else:
+                print(f"...{self.name} denies access to unauthorized user.")
         return authorized
 
     def retrieve_asset(self, name: str, password: str = None) -> Asset | None:
@@ -167,33 +169,30 @@ class Rig:
             if isinstance(asset, Asset):
                 self.__storage.append(asset)
                 self.__storage_counter += 1
-                print(f"{self.__name} stores a {asset.name}. "
+                print(f"...{self.__name} stores a {asset.name}. "
                       f"Assets stored: {self.__storage_counter}/{self.__max_storage}")
                 return None
             else:
-                print(f"Cannot store asset; asset not recognized.")
+                print(f"...{self.__name} cannot store the asset; the asset is not recognized.")
         else:
-            print("Cannot store asset; storage is full.")
+            print(f"...{self.__name} cannot store the asset; storage is full.")
         return asset
 
     def register_password(self, new_password: str, existing_password: str = None) -> None:
         """
         Set up a new password for rig access, or replace an existing one if authorized.
-
         :param new_password: A string denoting the new password to be registered.
         :param existing_password: The password required to verify that the user is authorized to replace
         the existing password.
         :return: None
         """
         if not self.__access_authorized(existing_password):
-            print(f"{self.__name} rejects new password; "
+            print(f"...{self.__name} rejects new password; "
                   f"the existing password must be provided before a new one can be registered.")
-
         else:
             self.__password = new_password
             self.__registered = True
-            print(f"{self.__name} successfully registers new password.")
-        return None
+            print(f"...{self.__name} successfully registers new password.")
 
     def upgrade(self, hardware_patch: Asset) -> None | Asset:
         """Upgrade the rig by consuming a hardware patch asset. Return the provided asset if it is not the correct type."""
@@ -201,10 +200,11 @@ class Rig:
             self.__upgrade_level += 1
             self.__max_hp += 2
             self.__damage_counter = 0  # reset to zero
-            print(f"{self.__name} is upgraded to {self.__describe_condition()}.")
+            print(f"...{self.__name} is upgraded to {self.__describe_condition()}. "
+                  f"It now has {self.__max_storage} storage space and {self.__max_hp} damage tolerance.")
             return None
         else:
-            print(f"{self.__name} fails to upgrade; a hardware patch was not provided.")
+            print(f"...{self.__name} fails to upgrade; a hardware patch was not provided.")
             return hardware_patch
 
     def repair(self, crypto_token: Asset) -> Asset | None:
@@ -212,11 +212,11 @@ class Rig:
         if not (self.__damage_counter < self.__max_hp):
             print(f"{self.__name} does not need a repair as it has no damage.")
         elif not (isinstance(crypto_token, Asset) and crypto_token.name == "CryptoToken"):
-            print(f"{self.__name} fails to repair; a CryptoToken was not provided.")
+            print(f"...{self.__name} fails to repair; a CryptoToken was not provided.")
         else:
             self.__damage_counter = 0
             self.__broken_state = False
-            print(f"Repair complete! {self.__name} is now {self.__describe_condition()}.")
+            print(f"...{self.__name} is repaired! {self.__describe_condition()}.")
             return None
         return crypto_token
 
@@ -229,3 +229,43 @@ class Rig:
             self.store_asset(new_asset, self.__password)
         else:
             print(f"{self.__name} tries to generate an asset, but there is no storage space available.")
+
+    def take_damage(self, asset: Asset) -> None:
+        """
+        Increase damage_counter by the damage dealt by the offensive asset.
+        :param asset: The asset object used to attack the rig.
+        :return: None
+        """
+        if isinstance(asset, Asset):
+            initial_remaining_health = self.__max_hp - self.__damage_counter
+            damage = asset.deal_damage()
+            if initial_remaining_health <= 0:
+                print(f"...{self.__name} continues to be broken.")
+            else:
+                self.__damage_counter += damage
+                remaining_health = self.__max_hp - self.__damage_counter
+                if remaining_health <= 0:
+                    self.__broken_state = True
+                    print(f"...{self.__name} is broken!")
+                else:
+                    print(f"...{self.__name} is {remaining_health} away from becoming broken.")
+
+    def launch_data_spike(self, target, password: str = None) -> None:
+        """
+        Attack another Rig instance using a stored Data Spike if one is available.
+        :param Rig target: The Rig object that will receive the attack damage.
+        :param password: The password created by the owner of the rig when the rig was registered.
+        :return: None
+        """
+        if not self.__access_authorized(password): return None
+
+        if not isinstance(target, Rig):
+            print(f"...{self.__name} fails to launch a data spike; the target was not a rig.")
+        else:
+            data_spike = self.retrieve_asset("Data Spike", password)
+            if data_spike is None:
+                print(f"...{self.__name} fails to launch a data spike; it cannot find one in storage.")
+            else:
+                print(f"...{self.__name} launches the data spike on {target.name}!")
+                target.take_damage(data_spike)
+        return None
