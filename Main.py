@@ -12,9 +12,9 @@ from Rig import Rig
 from random import randint
 
 
-# Test: attempting to add various items to rig storage.
+# Test: Add various items to rig storage.
 def trial1():
-    """Test: attempting to add various items to rig storage."""
+    """Test: Add various items to rig storage."""
     rig1 = Rig("Rig1")
     print(rig1)
     rig1.store_asset(Asset("dat"))  # invalid
@@ -24,9 +24,9 @@ def trial1():
     print(rig1)
 
 
-# Test: initiate hacker and acquire a rig.
+# Test: Initiate hacker and acquire a rig.
 def trial2():
-    """Test: initiate hacker and acquire a rig."""
+    """Test: Initiate hacker and acquire a rig."""
     charlie = Hacker("Charlie")
     alex = Hacker("Alex")
     rig1 = Rig("Rig1")
@@ -43,10 +43,10 @@ def trial2():
     alex.acquire_rig(rig2, "14slytherinLemonzzz@")  # does not have token
 
 
-# Test: transfer assets between hacker inventories and rig storage. Manage Hacker trace level and rig
+# Test: Transfer assets between hacker inventories and rig storage. Manage Hacker trace level and rig
 # random asset generation.
 def trial3():
-    """ Test: transfer assets between hacker inventories and rig storage. Manage Hacker trace level and rig
+    """ Test: Transfer assets between hacker inventories and rig storage. Manage Hacker trace level and rig
     random asset generation."""
     charlie = Hacker("Charlie")
     alex = Hacker("Alex")
@@ -98,4 +98,57 @@ def trial4():
     charlie.launch_data_spike(rig2)
 
 
-trial4()
+# Test: Encryption and decryption of storage/inventory assets.
+def trial5():
+    """Encryption and decryption of storage/inventory assets."""
+    charlie = Hacker("Charlie")
+    alex = Hacker("Alex")
+    rig1 = Rig("Rig1")
+    rig2 = Rig("Rig2")
+    charlie.acquire_rig(rig1, "charli3L0VESbananas3332!!")
+    alex.acquire_rig(rig2, "14slytherinLemonzzz@")
+
+    alex.encrypt_inventory_asset("CryptoToken")  # token does not yet exist
+    print(alex)
+    alex.find_asset(Asset("CryptoToken"))
+    print(alex)
+    alex.encrypt_inventory_asset("CryptoToken")  # does not have Security Chip
+
+    alex.find_asset(Asset("Security Chip"))
+    print(alex)
+    alex.encrypt_inventory_asset("CryptoToken")  # valid
+
+    print(alex)  # token should be encrypted
+
+    alex.decrypt_inventory_asset("CryptoToken")  # no more security chips.
+    alex.find_asset(Asset("Security Chip"))
+    alex.decrypt_inventory_asset("CryptoToken")  # valid
+
+    # storing a specific inventory asset in rig and encrypting rig assets:
+    alex.store_asset_in_rig("CryptoToken")
+    alex.store_asset_in_rig("CryptoToken")  # has already been transferred
+
+    alex.encrypt_rig_asset("CryptoToken")  # no security chip in rig
+
+    alex.find_asset(Asset("Security Chip"))
+    alex.store_asset_in_rig("Security Chip")
+    alex.encrypt_rig_asset("CryptoToken")  # valid
+
+    # transferring all inventory assets to rig and decrypting rig assets:
+    alex.find_asset(Asset("Security Chip"))
+    alex.find_asset(Asset("Security Chip"))
+    alex.find_asset(Asset("Security Chip"))
+    alex.find_asset(Asset("Security Chip"))  # ^add lots of chips to inventory
+
+    alex.store_all_assets_in_rig()
+    alex.encrypt_rig_asset("Security Chip")
+    print(alex)
+    print(rig2)
+
+    # retrieve all rig assets into inventory:
+    alex.extract_all_rig_assets()
+    print(alex)
+    print(rig2)
+
+
+trial5()

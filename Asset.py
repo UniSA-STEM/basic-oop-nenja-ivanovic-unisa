@@ -26,30 +26,28 @@ class Asset:
 
         self.__name = name
         self.__encrypted = False
+        self.__description = "NA"
+        self.__attack_damage = 0
 
-        if name == "CryptoToken:":
+        if name == "CryptoToken":
             self.__description = "Used to acquire or repair rigs."
-            self.__attack_damage = 0
         elif name == "Data Spike":
             self.__description = "Used in battles."
             self.__attack_damage = 1
         elif name == "Removable Drive":
             self.__description = "Found in rigs and used for extraction."
-            self.__attack_damage = 0
         elif name == "Security Chip":
             self.__description = "Used to encrypt or decrypt assets."
-            self.__attack_damage = 0
         elif name == "Hardware Patch":
             self.__description = "Used to upgrade rigs."
-            self.__attack_damage = 0
 
     def __str__(self):
         name = f"{self.name}: {self.description}"
-        if self.__encrypted: name += " [Encrypted]"
+        if self.encrypted: name += " [Encrypted]"
         return name
 
     # getters;
-    def get_name(self):
+    def get_name(self) -> str:
         return self.__name
 
     def get_description(self):

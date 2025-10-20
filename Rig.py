@@ -91,7 +91,7 @@ class Rig:
 
     def __get_unencrypted_assets(self) -> list[Asset]:
         """Returns a list of all the assets in the rig's storage which are not encrypted."""
-        return [asset for asset in self.__storage if asset.get_encrypted != True]
+        return [asset for asset in self.__storage if asset.encrypted != True]
 
     def __search_unencrypted_assets_by_name(self, name: str) -> list[Asset]:
         """Searches the Rig storage for unencrypted assets by name, and returns a list of matches."""
@@ -152,7 +152,7 @@ class Rig:
             for asset in assets:
                 self.retrieve_asset(asset.name, password)
                 count += 1
-            print(f"...{self.__name} finishes retrieval of {count} asset(s)).")
+            print(f"...{self.__name} finishes retrieval of {count} asset(s).")
             return assets
 
     def store_asset(self, asset: Asset, password: str = None) -> Asset | None:
