@@ -168,3 +168,79 @@ class Hacker:
             self.__rig.generate_asset()
 
         print("")
+
+    def encrypt_inventory_asset(self, name: str) -> None:
+        """
+        Searches inventory for an unencrypted asset by name and encrypts it if there is also a Security Chip in inventory.
+        :param name: The name of the asset to be encrypted.
+        :return: None
+        """
+        matching_assets = self.__scan_inventory_by_name(name)
+        if len(matching_assets) == 0:
+            print(f"{self.__name} fails to encrypt an asset; the asset is already encrypted or does not exist.\n")
+        else:
+            security_chip = self.retrieve_asset("Security Chip")
+            if security_chip is None:
+                print(f"{self.__name} fails to encrypt the {name}; "
+                      f"they cannot find a Security Chip in their inventory.\n")
+            else:
+                for asset in self.__inventory:
+                    if asset.name == name and not asset.encrypted:
+                        asset.encrypt()
+                        break
+                print(f"{self.__name} encrypts the {name} using 1 Security Chip.\n")
+        return None
+
+    def decrypt_inventory_asset(self, name: str) -> None:
+        """
+        Searches inventory for an encrypted asset by name and decrypts it if there is also a Security Chip in inventory.
+        :param name: The name of the asset to be decrypted.
+        :return: None
+        """
+        matching_assets = self.__scan_inventory_by_name(name)
+        if len(matching_assets) == len(self.__inventory):
+            print(f"{self.__name} fails to decrypt the asset; the asset is already decrypted or does not exist.")
+        else:
+            security_chip = self.retrieve_asset("Security Chip")
+            if security_chip is None:
+                print(f"{self.__name} fails to decrypt the {name}; "
+                      f"they cannot find a Security Chip in their storage.")
+            else:
+                for asset in self.__inventory:
+                    if asset.name == name and asset.encrypted:
+                        asset.decrypt()
+                        break
+                print(f"{self.__name} decrypts the {name} using 1 Security Chip.")
+        return None
+
+    def encrypt_rig_asset(self, name: str) -> None:
+        """
+        Asks the owned rig to encrypt an asset in its storage.
+        :param name: The name of the asset to be encrypted.
+        :return: None
+        """
+        if self.__rig is None:
+            print(f"{self.__name} wants to encrypt an asset stored in their rig, "
+                  f"but can't because ... they don't have a rig.")
+            return None
+
+        print(f"{self.__name} attempts to use {self.__rig} to encrypt a stored {name}...")
+        self.__rig.encrypt_stored_asset(name, self.__rig_password)
+        print("")
+        return None
+
+    def decrypt_rig_asset(self, name: str) -> None:
+        """
+        Asks the owned rig to decrypt an asset in its storage.
+        :param name: The name of the asset to be encrypted.
+        :return: None
+        """
+        if self.__rig is None:
+            print(f"{self.__name} wants to decrypt an asset stored in their rig, "
+                  f"but can't because ... they don't have a rig.")
+            return None
+
+        print(f"{self.__name} attempts to use {self.__rig} to decrypt a stored {name}...")
+        self.__rig.decrypt_stored_asset(name, self.__rig_password)
+        print("")
+        return None
