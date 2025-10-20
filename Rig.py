@@ -1,9 +1,11 @@
 """
 File: Rig.py
-Description: <A brief description of this Python module.>
-Author: <full name>
-ID: <student_id>
-Username: <username>
+Description: Contains the Rig class. The rig class does not perform actions of its own accord, but responds to action
+requests made by Hacker objects. Rig object methods contain the nuances of events involving transfer of assets, attack
+launching, repair and upgrading.
+Author: Nenja Ivanovic
+ID: 110462390
+Username: ivany005
 This is my own work as defined by the University's Academic Misconduct Policy.
 """
 from Asset import Asset
@@ -41,24 +43,6 @@ class Rig:
     # properties
     name = property(get_name)
     registered = property(get_registered)
-
-    def get_damage_counter(self):
-        return self.__damage_counter
-
-    def get_broken_state(self):
-        return self.__broken_state
-
-    def get_inventory_counter(self):
-        return self.__storage_counter
-
-    def get_upgrade_level(self):
-        return self.__upgrade_level
-
-    def get_max_hp(self):
-        return self.__max_hp
-
-    def get_max_inventory(self):
-        return self.__max_storage
 
     def __storage_capacity_available(self) -> bool:
         """

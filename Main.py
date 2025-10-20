@@ -1,9 +1,10 @@
 """
 File: main.py
-Description: <A brief description of this Python module.>
-Author: <full name>
-ID: <student_id>
-Username: <username>
+Description: 5 sample test scenarios are run to demonstrate how the Asset, Hacker, and Rig classes interact with each
+other. The module instantiates instance of classes and simulates Hackers battling via their Rigs.
+Author: Nenja Ivanovic
+ID: 110462390
+Username: ivany005
 This is my own work as defined by the University's Academic Misconduct Policy.
 """
 from Asset import Asset

@@ -1,9 +1,11 @@
 """
 File: Hacker.py
-Description: <A brief description of this Python module.>
-Author: <full name>
-ID: <student_id>
-Username: <username>
+Description: Contains the Hacker class. Hackers are the primary objects that initiate actions in main; they can acquire
+assets and interact in a restricted way with Rig objects. Many of the actions they perform are merely requests for a
+Rig to perform one of its own actions on their behalf.
+Author: Nenja Ivanovic
+ID: 110462390
+Username: ivany005
 This is my own work as defined by the University's Academic Misconduct Policy.
 """
 from Asset import Asset
@@ -12,6 +14,7 @@ from Rig import Rig
 
 class Hacker:
     def __init__(self, name: str):
+        """create instances of Hacker objects"""
         self.__name = name
         self.__inventory = [Asset("CryptoToken")]
         self.__rig = None
