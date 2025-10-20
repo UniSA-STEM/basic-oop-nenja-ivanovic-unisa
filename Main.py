@@ -24,7 +24,7 @@ def trial1():
     print(rig1)
 
 
-# Test: Initiate hacker and acquire a rig.
+# Test: Initiate hacker and acquire a rig. Upgrade rig.
 def trial2():
     """Test: Initiate hacker and acquire a rig."""
     charlie = Hacker("Charlie")
@@ -41,6 +41,18 @@ def trial2():
     alex.acquire_rig(rig1, "14slytherinLemonzzz@")  # rig already owned
     alex.retrieve_asset("CryptoToken")  # lose token
     alex.acquire_rig(rig2, "14slytherinLemonzzz@")  # does not have token
+
+    # upgrade rig:
+    charlie.upgrade_rig()  # no hardware patch
+    charlie.find_asset(Asset("Hardware Patch"))
+    charlie.find_asset(Asset("Security Chip"))
+    charlie.find_asset(Asset("Security Chip"))
+
+    charlie.encrypt_inventory_asset("Hardware Patch")
+    charlie.upgrade_rig()  # hardware patch is encrypted
+
+    charlie.decrypt_inventory_asset("Hardware Patch")
+    charlie.upgrade_rig()  # valid
 
 
 # Test: Transfer assets between hacker inventories and rig storage. Manage Hacker trace level and rig
@@ -62,20 +74,20 @@ def trial3():
     charlie.get_asset_from_rig("Data")  # not real data
     charlie.get_asset_from_rig("CryptoToken")  # rig does not currently possess this object.
     charlie.get_asset_from_rig("Data Spike", rig2)  # trying to steal from another hacker's rig.
+
     charlie.get_asset_from_rig("Data Spike", rig2)
     charlie.get_asset_from_rig("Data Spike", rig2)  # too exposed
     print(charlie)
 
+    charlie.lay_low()  # reduce trace level and generate random assets in rig
     charlie.lay_low()
     charlie.lay_low()
-    charlie.lay_low()
-    charlie.lay_low()
-    charlie.lay_low()
+
     print(charlie)
     print(rig1)
 
 
-# Test: Launch data spike attacks, take rig damage and repair damage.
+# Test: Launch data spike attacks, take rig damage, extract all from broken rig, repair damage.
 def trial4():
     """Test: Launch data spike attacks, take rig damage and repair damage."""
     charlie = Hacker("Charlie")
@@ -85,10 +97,13 @@ def trial4():
     charlie.acquire_rig(rig1, "charli3L0VESbananas3332!!")
     alex.acquire_rig(rig2, "14slytherinLemonzzz@")
 
+    alex.get_asset_from_rig("Removable Drive")
+    alex.extract_all_rig_assets(rig1)  # rig not broken yet
+
     alex.launch_data_spike(rig1)
     alex.launch_data_spike(rig1)
     alex.launch_data_spike(rig1)  # no spike available
-    alex.get_asset_from_rig("Data Spike", rig1)
+
     alex.lay_low()  # generate assets
     alex.lay_low()
     alex.lay_low()
@@ -96,6 +111,13 @@ def trial4():
     alex.launch_data_spike(rig1)  # if new data spikes have been generated, rig 1 is attacked when already broken.
     alex.launch_data_spike(3)  # incorrect input
     charlie.launch_data_spike(rig2)
+
+    alex.extract_all_rig_assets(rig1)  # removable drive was used up in earlier attempt
+    alex.find_asset(Asset("Removable Drive"))
+    alex.extract_all_rig_assets(rig1)
+
+    print(alex)
+    print(rig1)
 
 
 # Test: Encryption and decryption of storage/inventory assets.
@@ -151,4 +173,17 @@ def trial5():
     print(rig2)
 
 
+print("//////////////////////////////////////////////////////////////////////     SET 1 TESTS")
+trial1()
+
+print("//////////////////////////////////////////////////////////////////////     SET 2 TESTS")
+trial2()
+
+print("//////////////////////////////////////////////////////////////////////     SET 3 TESTS")
+trial3()
+
+print("//////////////////////////////////////////////////////////////////////     SET 4 TESTS")
+trial4()
+
+print("//////////////////////////////////////////////////////////////////////     SET 5 TESTS")
 trial5()

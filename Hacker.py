@@ -181,9 +181,9 @@ class Hacker:
                         print(f"{self.__name} fails to execute the extraction; "
                               f"they cannot find a Removable Drive in their inventory.\n")
                         return None
-                self.__inventory += rig.retrieve_all_assets(self.__rig_password)
-                # remove 'None' if that is what was returned:
-                self.__inventory = [asset for asset in self.__inventory if asset is not None]
+                retrieved_assets = rig.retrieve_all_assets(self.__rig_password)
+                if retrieved_assets is not None:
+                    self.__inventory += retrieved_assets
                 self.__increase_trace_level()
         return None
 
@@ -339,5 +339,47 @@ class Hacker:
         else:
             print(f"{self.__name} attempts to use {self.__rig.name} to decrypt a stored {name}...")
             self.__rig.decrypt_stored_asset(name, self.__rig_password)
+        print("")  # formatting
+        return None
+
+    def upgrade_rig(self) -> None:
+        """
+        Allows the hacker to upgrade the abilities of their rig using 1 Hardware Patch.
+        :return:None
+        """
+        if self.__rig is None:
+            print(f"{self.__name} wants to upgrade their rig, "
+                  f"but can't because ... they don't have a rig.")
+        else:
+            hardware_patch = self.retrieve_asset("Hardware Patch")
+            if hardware_patch is None:
+                print(f"{self.__name} fails to upgrade {self.__rig.name}; a Hardware Patch is required for an upgrade "
+                      f"and {self.__name} can't find any.")
+            else:
+                print(f"{self.__name} tries to upgrade {self.__rig.name} using a Hardware Patch...")
+                rejected_asset = self.__rig.upgrade(hardware_patch)
+                if rejected_asset is not None:
+                    self.__inventory.append(rejected_asset)
+        print("")  # formatting
+        return None
+
+    def repair_rig(self) -> None:
+        """
+        Allows the hacker to repair their rig for 1 CryptoToken if broken.
+        :return:None
+        """
+        if self.__rig is None:
+            print(f"{self.__name} wants to repair their rig, "
+                  f"but can't because ... they don't have a rig.")
+        else:
+            crypto_token = self.retrieve_asset("CryptoToken")
+            if crypto_token is None:
+                print(f"{self.__name} fails to repair {self.__rig.name}; it costs 1 CryptoToken to repair a Rig "
+                      f"and {self.__name} can't find any.")
+            else:
+                print(f"{self.__name} tries to repair {self.__rig.name} for 1  CryptoToken...")
+                rejected_asset = self.__rig.repair(crypto_token)
+                if rejected_asset is not None:
+                    self.__inventory.append(rejected_asset)
         print("")  # formatting
         return None
