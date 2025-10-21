@@ -14,7 +14,7 @@ from Rig import Rig
 
 class Hacker:
     def __init__(self, name: str):
-        """create instances of Hacker objects"""
+        """Create instances of Hacker objects."""
         self.__name = name
         self.__inventory = [Asset("CryptoToken")]
         self.__rig = None
@@ -24,6 +24,7 @@ class Hacker:
         self.__trace_threshold = 5
 
     def __str__(self) -> str:
+        """Return a string representation of the Hacker object."""
         return ("------------------------------------------------\n" +
                 self.__name + " - " + self.__describe_trace_level() + "\n" +
                 f"Rig: {None if self.__rig is None else self.__rig.name}\n" +
@@ -41,7 +42,8 @@ class Hacker:
         return description
 
     def __describe_stored_assets(self) -> str:
-        """ Returns a string of the Asset objects stored in the Hacker's inventory, listed in a visually appealing way."""
+        """ Iterates through the Asset objects stored in the Hacker's inventory, and returns a formatted string
+        summary of them."""
         description = f"\nAssets in Inventory:"
         if len(self.__inventory) == 0:
             description += " None"
@@ -57,7 +59,9 @@ class Hacker:
         return [asset for asset in self.__inventory if asset.encrypted != True]
 
     def __scan_inventory_by_name(self, name: str) -> list[Asset]:
-        """Searches the Hacker's inventory for unencrypted assets by name, and returns a list of matches."""
+        """Searches the Hacker's inventory for unencrypted assets by name, and returns a list of matches.
+        :param name: the asset name to search the inventory for.
+        :return: A list containing the Asset objects in inventory which match the search name."""
         matches = []
         for asset in self.__get_unencrypted_assets():
             if asset.name == name:
@@ -66,7 +70,8 @@ class Hacker:
 
     def find_asset(self, asset: Asset) -> None:
         """
-        Add an asset to inventory that is found/ exists outside Rig generation. [Used mainly for testing purposes.]
+        Add an asset to inventory that exists outside Rig generation (is "found" by the hacker).
+        [Used for testing purposes.]
         :param asset: The asset object to be added to inventory.
         :return: None
         """
@@ -74,12 +79,14 @@ class Hacker:
             print(f"{self.__name} thought they found an asset, but it turned out to be nothing special.\n")
         else:
             self.__inventory.append(asset)
-            print(f"{self.__name} found an unclaimed {asset.name} and added it to their inventory.\n")
+            print(f"{self.__name} finds an unclaimed {asset.name} and adds it to their inventory.\n")
 
     def retrieve_asset(self, name: str) -> Asset | None:
         """
-        Allows objects from other classes to take resources from the Hacker's inventory.
-        :param name:The name of the asset which the hacker wishes to retrieve from their inventory.
+        Allows the hacker to remove an unencrypted asset object from their inventory and use it in some other method
+        if required. The asset is searched for by name, and the first match is retrieved if there are multiple assets
+        in inventory with the same name.
+        :param name: The name of the asset which the hacker wishes to retrieve from their inventory.
         :return: Asset if an asset with a matching name is found in the Hacker's inventory which is unencrypted, otherwise nothing.
         """
         assets = self.__scan_inventory_by_name(name)
@@ -96,12 +103,12 @@ class Hacker:
         """
         Allows the hacker to purchase an available rig for 1 CryptoToken and register a password on it.
         :param rig: The rig object which the Hacker wishes to try to acquire.
-        :param password: The password that will be registered on the rig if it is successfully acquired.
+        :param password: The string password that will be registered on the rig if it is successfully acquired.
         :return:None
         """
-        if self.__rig is not None:
+        if isinstance(self.__rig, Rig):
             print(f"{self.__name} fails to acquire a rig; "
-                  f"{self.__name} cannot bring themself to replace {self.__rig.name}.")
+                  f"{self.__name} cannot bring themself to replace {self.__rig.get_name()}.")
         elif not isinstance(rig, Rig):
             print(f"{self.__name} fails to acquire a rig; the object they thought was a "
                   f"rig was actually something else.")
@@ -113,13 +120,12 @@ class Hacker:
                 print(f"{self.__name} fails to acquire a rig; a rig costs 1 CryptoToken "
                       f"and {self.__name} can't find any.")
             else:
-                print(f"{self.__name} acquires {rig.name} for 1 CryptoToken. Hooray!")
+                print(f"{self.__name} acquires {rig.get_name()} for 1 CryptoToken. Hooray!")
                 self.__rig = rig
                 self.__rig_password = password
                 self.__rig.register_password(password)
 
         print("")  # formatting
-        return None
 
     def __increase_trace_level(self) -> None:
         """Increases a Hacker's trace level when they perform a risky action, and updates their 'is_exposed' status
@@ -145,18 +151,19 @@ class Hacker:
             if alt_rig is None and self.__rig is None:
                 print(f"{self.__name} wants to transfer assets from their rig, "
                       f"but can't because ... they don't have a rig.\n")
+            elif self.__rig is None and not isinstance(alt_rig, Rig):
+                print(f"{self.__name} wants to steal assets from another rig, "
+                      f"but can't find a rig to steal from.\n")
             else:
                 if alt_rig is None:
                     rig = self.__rig  # taking from own rig
                     print(f"{self.__name} tries to transfer a {name} from {rig.name}...")
                 else:
                     rig = alt_rig  # taking from someone else's rig
-                    print(f"{self.__name} tries to steal a {name} from {rig.name}...")
-                self.__inventory.append(rig.retrieve_asset(name, self.__rig_password))
-                # remove 'None' if that is what was returned:
-                self.__inventory = [asset for asset in self.__inventory if asset is not None]
+                    print(f"{self.__name} tries to steal a {name} from {rig.get_name()}...")
+                retrieved_item = rig.retrieve_asset(name, self.__rig_password)
+                if retrieved_item is not None: self.__inventory.append(retrieved_item)
                 self.__increase_trace_level()
-        return None
 
     def extract_all_rig_assets(self, alt_rig: Rig = None) -> None:
         """
@@ -172,13 +179,16 @@ class Hacker:
             if alt_rig is None and self.__rig is None:
                 print(f"{self.__name} wants to extract all assets from their rig, "
                       f"but can't because ... they don't have a rig.\n")
+            elif self.__rig is None and not isinstance(alt_rig, Rig):
+                print(f"{self.__name} wants to steal assets from another rig, "
+                      f"but can't find a rig to steal from.\n")
             else:
                 if alt_rig is None:
                     rig = self.__rig  # taking from own rig
                     print(f"{self.__name} tries to extract all assets from {rig.name}...")
                 else:
-                    rig = alt_rig  # taking from someone else's rig
-                    print(f"{self.__name} tries to extract all assets from {rig.name}...")
+                    rig = alt_rig  # taking from someone else's rig (removable drive required)
+                    print(f"{self.__name} tries to extract all assets from {rig.get_name()}...")
                     removable_drive = self.retrieve_asset("Removable Drive")
                     if removable_drive is None:
                         print(f"{self.__name} fails to execute the extraction; "
@@ -210,7 +220,6 @@ class Hacker:
                 self.__increase_trace_level()
             else:
                 print("")  # formatting
-        return None
 
     def store_all_assets_in_rig(self) -> None:
         """
@@ -238,7 +247,6 @@ class Hacker:
                 transfer_count -= 1
             print(f"...{self.__name} successfully transferred {transfer_count} asset(s) to {self.__rig.name}")
             self.__increase_trace_level()
-        return None
 
     def launch_data_spike(self, target_rig: Rig) -> None:
         """
@@ -279,7 +287,8 @@ class Hacker:
         """
         matching_assets = self.__scan_inventory_by_name(name)
         if len(matching_assets) == 0:
-            print(f"{self.__name} fails to encrypt an asset; the asset is already encrypted or does not exist.\n")
+            print(f"{self.__name} fails to encrypt a {name} in their inventory; "
+                  f"the asset is already encrypted or does not exist.\n")
         else:
             security_chip = self.retrieve_asset("Security Chip")
             if security_chip is None:
@@ -291,7 +300,6 @@ class Hacker:
                         asset.encrypt()
                         break
                 print(f"{self.__name} encrypts the {name} using 1 Security Chip.\n")
-        return None
 
     def decrypt_inventory_asset(self, name: str) -> None:
         """
@@ -300,7 +308,8 @@ class Hacker:
         :return: None
         """
         if len(self.__get_unencrypted_assets()) == len(self.__inventory):
-            print(f"{self.__name} fails to decrypt the asset; the asset is already decrypted or does not exist.")
+            print(f"{self.__name} fails to decrypt a {name} in their inventory; "
+                  f"the asset is already decrypted or does not exist.")
         else:
             security_chip = self.retrieve_asset("Security Chip")
             if security_chip is None:
@@ -313,7 +322,6 @@ class Hacker:
                         break
                 print(f"{self.__name} decrypts the {name} using 1 Security Chip.")
         print("")  # formatting
-        return None
 
     def encrypt_rig_asset(self, name: str) -> None:
         """
@@ -322,13 +330,12 @@ class Hacker:
         :return: None
         """
         if self.__rig is None:
-            print(f"{self.__name} wants to encrypt an asset stored in their rig, "
+            print(f"{self.__name} wants to encrypt a {name} stored in their rig, "
                   f"but can't because ... they don't have a rig.")
         else:
             print(f"{self.__name} attempts to use {self.__rig.name} to encrypt a stored {name}...")
             self.__rig.encrypt_stored_asset(name, self.__rig_password)
         print("")  # formatting
-        return None
 
     def decrypt_rig_asset(self, name: str) -> None:
         """
@@ -337,18 +344,17 @@ class Hacker:
         :return: None
         """
         if self.__rig is None:
-            print(f"{self.__name} wants to decrypt an asset stored in their rig, "
+            print(f"{self.__name} wants to decrypt a {name} stored in their rig, "
                   f"but can't because ... they don't have a rig.")
         else:
             print(f"{self.__name} attempts to use {self.__rig.name} to decrypt a stored {name}...")
             self.__rig.decrypt_stored_asset(name, self.__rig_password)
         print("")  # formatting
-        return None
 
     def upgrade_rig(self) -> None:
         """
         Allows the hacker to upgrade the abilities of their rig using 1 Hardware Patch.
-        :return:None
+        :return: None
         """
         if self.__rig is None:
             print(f"{self.__name} wants to upgrade their rig, "
@@ -364,11 +370,10 @@ class Hacker:
                 if rejected_asset is not None:
                     self.__inventory.append(rejected_asset)
         print("")  # formatting
-        return None
 
     def repair_rig(self) -> None:
         """
-        Allows the hacker to repair their rig for 1 CryptoToken if broken.
+        Allows the hacker to repair their rig for 1 CryptoToken if the rig is broken.
         :return:None
         """
         if self.__rig is None:
@@ -380,9 +385,8 @@ class Hacker:
                 print(f"{self.__name} fails to repair {self.__rig.name}; it costs 1 CryptoToken to repair a Rig "
                       f"and {self.__name} can't find any.")
             else:
-                print(f"{self.__name} tries to repair {self.__rig.name} for 1  CryptoToken...")
-                rejected_asset = self.__rig.repair(crypto_token)
+                print(f"{self.__name} tries to repair {self.__rig.name} for 1 CryptoToken...")
+                rejected_asset = self.__rig.repair(crypto_token)  # asset is returned if rig is not broken.
                 if rejected_asset is not None:
                     self.__inventory.append(rejected_asset)
         print("")  # formatting
-        return None

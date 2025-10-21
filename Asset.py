@@ -1,9 +1,9 @@
 """
 File: Asset.py
-Description: Contains the Asset class. Assets are very simple objects that only protect simple attributes which
-describe them (name, description, encryption status and attack damage). In addition, they are responsible for
-validating that new Asset instances fall into one of 5 predefined  types, and can also generate one of these
-randomly when prompted.
+Description: Contains the Asset class. Assets are the lowest level objects that only know about themselves.
+They protect the simple attributes which describe them (name, description, encryption status and attack damage).
+In addition, they are responsible for verifying that new Asset instances fall into one of 5 predefined types,
+and can also generate one of these randomly when prompted.
 Author: Nenja Ivanovic
 ID: 110462390
 Username: ivany005
@@ -17,8 +17,12 @@ class Asset:
 
     def __new__(cls, name: str = None):
         """
-        Allocate a new Asset instance, validating the proposed name before creation.
-        :param name: The proposed asset name of the new instance that needs to be validated.
+        Allocate a new Asset instance, validating the proposed name against the valid 'available_assets' list
+        before creation. If none is provided, proceeds with creation where __init__() will randomly assign a valid
+        name.
+        :param name: The proposed asset name of the new instance.
+        :return: None if name is invalid, otherwise a new Asset
+
         """
         if name not in Asset.available_assets and name is not None:
             print(f"The asset '{name}' does not exist. Available assets are: {Asset.available_assets}")
@@ -51,23 +55,23 @@ class Asset:
         elif name == "Hardware Patch":
             self.__description = "Used to upgrade rigs."
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a string description of the Asset"""
         name = f"{self.name}: {self.description}"
         if self.encrypted: name += " [Encrypted]"
         return name
 
-    # getters;
+    # getters
     def get_name(self) -> str:
-        """Get the asset name"""
+        """Return a string of the asset's name."""
         return self.__name
 
-    def get_description(self):
-        """Get the asset description"""
+    def get_description(self) -> str:
+        """Return a string of the asset's description."""
         return self.__description
 
-    def get_encrypted(self):
-        """Get the asset encryption status"""
+    def get_encrypted(self) -> bool:
+        """Get the asset encryption status; True if the asset is encrypted, otherwise False."""
         return self.__encrypted
 
     # properties:
@@ -76,14 +80,14 @@ class Asset:
     encrypted = property(get_encrypted)
 
     def encrypt(self) -> None:
-        """set the asset encryption status to Encrypted"""
+        """Set the asset encryption status to True (Encrypted)"""
         self.__encrypted = True
 
     def decrypt(self) -> None:
-        """set the asset encryption status to Decrypted"""
+        """Set the asset encryption status to False (Decrypted)"""
         self.__encrypted = False
 
     def deal_damage(self) -> int:
-        """get the asset's attack damage, and print a description of the asset dealing damage"""
+        """Get the asset's attack damage, and print a description of the asset dealing damage."""
         print(f"...The {self.__name} deals {self.__attack_damage} damage.")
         return self.__attack_damage

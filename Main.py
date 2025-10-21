@@ -1,7 +1,7 @@
 """
 File: main.py
 Description: 5 sample test scenarios are run to demonstrate how the Asset, Hacker, and Rig classes interact with each
-other. The module instantiates instance of classes and simulates Hackers battling via their Rigs.
+other. The module instantiates the classes and simulates game-like Rig battles.
 Author: Nenja Ivanovic
 ID: 110462390
 Username: ivany005
@@ -55,6 +55,9 @@ def trial2():
     charlie.decrypt_inventory_asset("Hardware Patch")
     charlie.upgrade_rig()  # valid
 
+    charlie.find_asset(Asset("Hardware Patch"))
+    charlie.upgrade_rig()  # valid - Level 2
+
 
 # Test: Transfer assets between hacker inventories and rig storage. Manage Hacker trace level and rig
 # random asset generation.
@@ -72,7 +75,7 @@ def trial3():
     print(charlie)
     print(rig1)
 
-    charlie.get_asset_from_rig("Data")  # not real data
+    charlie.get_asset_from_rig("Cat")  # not an asset
     charlie.get_asset_from_rig("CryptoToken")  # rig does not currently possess this object.
     charlie.get_asset_from_rig("Data Spike", rig2)  # trying to steal from another hacker's rig.
 
@@ -83,6 +86,7 @@ def trial3():
     charlie.lay_low()  # reduce trace level and generate random assets in rig
     charlie.lay_low()
     charlie.lay_low()
+    charlie.lay_low()  # generated asset cannot be stored because there is no more space
 
     print(charlie)
     print(rig1)
@@ -119,6 +123,16 @@ def trial4():
 
     print(alex)
     print(rig1)
+
+    charlie.repair_rig()  # no items to use to repair the rig
+    charlie.lay_low()
+    charlie.lay_low()
+
+    charlie.find_asset(Asset("CryptoToken"))
+    charlie.repair_rig()
+    print(rig1)
+
+    alex.extract_all_rig_assets(rig1)  # cannot extract, rig1 has been repaired
 
 
 # Test: Encryption and decryption of storage/inventory assets.
