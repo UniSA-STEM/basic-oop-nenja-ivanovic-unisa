@@ -15,25 +15,16 @@ from random import randint
 class Asset:
     available_assets = ["CryptoToken", "Data Spike", "Removable Drive", "Security Chip", "Hardware Patch"]
 
-    def __new__(cls, name: str = None):
-        """
-        Allocate a new Asset instance, validating the proposed name against the valid 'available_assets' list
-        before creation. If none is provided, proceeds with creation where __init__() will randomly assign a valid
-        name.
-        :param name: The proposed asset name of the new instance.
-        :return: None if name is invalid, otherwise a new Asset
-
-        """
-        if name not in Asset.available_assets and name is not None:
-            print(f"The asset '{name}' does not exist. Available assets are: {Asset.available_assets}")
-            return None
-        return super().__new__(cls)
-
     def __init__(self, name: str = None) -> None:
         """
         Initialise new Asset instances.
         :param name: The asset's name.
         """
+        if name not in Asset.available_assets and name is not None:  # spawn random if asset name is invalid.
+            print(f"The asset '{name}' does not exist. A random valid asset has been spawned instead. "
+                  f"\n(Available valid assets are: {Asset.available_assets})")
+            name = None
+
         if name is None:  # generate a random asset when no name is specified
             random_index = randint(0, len(Asset.available_assets) - 1)
             name = Asset.available_assets[random_index]
